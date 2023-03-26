@@ -31,31 +31,36 @@ const playerFF = (name, isPlayerOne) => {
 
   const addMarker = (item) => {
     item.addEventListener('click', () => {
-      const brd = gameBoardModule.board;
-
-      // check which players turn it is
-      console.log(gameBoardModule.isPlayerOneNext, isPlayerOne);
-      // drop out of event if it's wrong turn, let other overwrite
+      // drop out of event if it's wrong turn
       if (!gameBoardModule.isPlayerOneNext && isPlayerOne) return;
 
       // row 1
       if (0 < item.className && item.className <= 3) {
-        if (!brd.row1[item.className - 1])
+        if (!gameBoardModule.board.row1[item.className - 1]) {
           // set marker if no marker set yet
-          brd.row1[item.className - 1] = marker;
+          gameBoardModule.board.row1[item.className - 1] = marker;
+          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+        }
       }
-      // row 2
-      if (3 < item.className && item.className <= 6)
-        if (!brd.row2[item.className - 4])
-          // set marker if no marker set yet
-          brd.row2[item.className - 4] = marker;
-      // row 3
-      if (6 < item.className && item.className <= 9)
-        if (!brd.row3[item.className - 7])
-          // set marker if no marker set yet
-          brd.row3[item.className - 7] = marker;
 
-      gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+      // row 2
+      if (3 < item.className && item.className <= 6) {
+        if (!gameBoardModule.board.row2[item.className - 4]) {
+          // set marker if no marker set yet
+          gameBoardModule.board.row2[item.className - 4] = marker;
+          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+        }
+      }
+
+      // row 3
+      if (6 < item.className && item.className <= 9) {
+        if (!gameBoardModule.board.row3[item.className - 7]) {
+          // set marker if no marker set yet
+          gameBoardModule.board.row3[item.className - 7] = marker;
+          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+        }
+      }
+
       displayControllerModule.draw();
     });
   };
@@ -71,17 +76,19 @@ const playerFF = (name, isPlayerOne) => {
 const displayControllerModule = (() => {
   const p1 = playerFF('Player 1', true);
   const p2 = playerFF('Player 2', false);
+  const fields = document.querySelectorAll('.container > div');
+
+  // Add eventListenerMarker for each player
+  fields.forEach((item, index) => {
+    p1.addMarker(item);
+    p2.addMarker(item);
+  });
 
   const draw = () => {
-    const fields = document.querySelectorAll('.container > div');
     fields.forEach((item, index) => {
       item.textContent = gameBoardModule.boardToArray()[index];
-      // I think I add too many !!
-      p1.addMarker(item);
-      p2.addMarker(item);
     });
   };
-  draw(); // temporary
 
   return { draw };
 })();
