@@ -15,10 +15,41 @@ const gameBoardModule = (() => {
 
   const isPlayerOneNext = true;
 
+  const isOver = () => {
+    let over = false;
+
+    // check vertical win
+    Object.keys(board).forEach((key) => {
+      if (board[key][0] !== '')
+        if (board[key][0] === board[key][1] && board[key][0] === board[key][2])
+          over = true;
+    });
+
+    // check horizontal win
+    for (let i = 0; i < 3; i += 1) {
+      if (board.row1[i] !== '')
+        if (board.row1[i] === board.row2[i] && board.row1[i] === board.row3[i])
+          over = true;
+    }
+
+    // check diagonal win #1
+    if (board.row1[0] !== '')
+      if (board.row1[0] === board.row2[1] && board.row1[0] === board.row3[2])
+        over = true;
+
+    // check diagonal win #2
+    if (board.row3[0] !== '')
+      if (board.row3[0] === board.row2[1] && board.row3[0] === board.row1[2])
+        over = true;
+
+    return over;
+  };
+
   return {
     boardToArray,
     board,
     isPlayerOneNext,
+    isOver,
   };
 })();
 
@@ -27,6 +58,7 @@ const playerFF = (name, isPlayerOne) => {
 
   const addMarker = (item) => {
     item.addEventListener('click', () => {
+      if (gameBoardModule.isOver()) return;
       // check which players turn it is
       // drop out of event if it's wrong turn, let other overwrite
       if (!gameBoardModule.isPlayerOneNext && isPlayerOne) {
