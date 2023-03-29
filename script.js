@@ -74,9 +74,6 @@ const playerFF = (name, isPlayerOne) => {
 
   const addMarker = (item) => {
     item.addEventListener('click', () => {
-      // check which players turn it is
-      // drop out of event if it's wrong turn, let other overwrite
-
       // row 1
       if (item.className > 0 && item.className <= 3) {
         if (!gameBoardModule.board.row1[item.className - 1]) {
@@ -102,6 +99,8 @@ const playerFF = (name, isPlayerOne) => {
       }
       // eslint-disable-next-line no-use-before-define
       displayControllerModule.draw();
+      gameBoardModule.isOver();
+
       displayControllerModule.aiMove();
       gameBoardModule.isOver();
     });
@@ -132,10 +131,18 @@ const displayControllerModule = (() => {
   };
 
   const congratulateWinner = (marker) => {
-    let winner = marker === 'X' ? p1 : 'AI';
+    const winDisplay = document.querySelector('h2');
 
-    if (marker === 'X') alert(`${p1.name} won!`);
-    if (marker === 'O') alert('AI won!');
+    if (marker === 'X') {
+      winDisplay.textContent = 'Player 1 won! 🎉';
+      winDisplay.style.color = 'green';
+    }
+    if (marker === 'O') {
+      winDisplay.textContent = 'AI won! 🖕';
+      winDisplay.style.color = 'red';
+    }
+
+    winDisplay.style.display = 'block';
   };
 
   const aiMove = () => {
@@ -173,3 +180,7 @@ const displayControllerModule = (() => {
     aiMove,
   };
 })();
+
+// known issues:
+// - AI can set a last move after the player, basically stealing the players win
+// - player can move after AI won (can also steal win)
