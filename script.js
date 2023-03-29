@@ -13,6 +13,7 @@ const gameBoardModule = (() => {
 
   let isPlayerOneNext = true;
 
+  // not working properly.
   const restart = () => {
     board = {
       row1: ['', '', ''],
@@ -20,7 +21,7 @@ const gameBoardModule = (() => {
       row3: ['', '', ''],
     };
 
-    isPlayerOneNext = true;
+    //isPlayerOneNext = true;
     gameBoardModule.over = false;
   };
 
@@ -102,6 +103,7 @@ const playerFF = (name, isPlayerOne) => {
           // set marker if no marker set yet
           gameBoardModule.board.row1[item.className - 1] = marker;
           gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+          displayControllerModule.aiMove();
         }
       }
 
@@ -111,6 +113,7 @@ const playerFF = (name, isPlayerOne) => {
           // set marker if no marker set yet
           gameBoardModule.board.row2[item.className - 4] = marker;
           gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+          displayControllerModule.aiMove();
         }
       }
 
@@ -120,6 +123,7 @@ const playerFF = (name, isPlayerOne) => {
           // set marker if no marker set yet
           gameBoardModule.board.row3[item.className - 7] = marker;
           gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
+          displayControllerModule.aiMove();
         }
       }
       // eslint-disable-next-line no-use-before-define
@@ -165,9 +169,30 @@ const displayControllerModule = (() => {
     alert(`${winner.name} did win!`);
   };
 
+  const aiMove = () => {
+    let freeMove = [];
+    gameBoardModule.boardToArray().forEach((field, index) => {
+      if (field === '') freeMove.push(index);
+    });
+
+    let randomLegalMove = Math.floor(Math.random() * (freeMove.length + 1));
+
+    if (randomLegalMove > 0 && randomLegalMove <= 3)
+      gameBoardModule.board.row1[randomLegalMove] = 'O';
+
+    if (randomLegalMove > 3 && randomLegalMove <= 6)
+      gameBoardModule.board.row2[randomLegalMove - 3] = 'O';
+
+    if (randomLegalMove > 6 && randomLegalMove <= 9)
+      gameBoardModule.board.row3[randomLegalMove - 6] = 'O';
+
+    console.log(gameBoardModule.board);
+  };
+
   return {
     draw,
     congratulateWinner,
+    aiMove,
   };
 })();
 
