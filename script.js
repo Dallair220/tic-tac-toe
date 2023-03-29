@@ -74,6 +74,8 @@ const playerFF = (name, isPlayerOne) => {
 
   const addMarker = (item) => {
     item.addEventListener('click', () => {
+      if (gameBoardModule.isOver()) return;
+
       // row 1
       if (item.className > 0 && item.className <= 3) {
         if (!gameBoardModule.board.row1[item.className - 1]) {
@@ -134,11 +136,11 @@ const displayControllerModule = (() => {
     const winDisplay = document.querySelector('h2');
 
     if (marker === 'X') {
-      winDisplay.textContent = 'Player 1 won! 🎉';
+      winDisplay.textContent = 'P1 won 🎉';
       winDisplay.style.color = 'green';
     }
     if (marker === 'O') {
-      winDisplay.textContent = 'AI won! 🖕';
+      winDisplay.textContent = 'AI won 🖕';
       winDisplay.style.color = 'red';
     }
 
@@ -146,32 +148,39 @@ const displayControllerModule = (() => {
   };
 
   const aiMove = () => {
-    console.log(gameBoardModule.board);
-
     let freeMove = [];
+    // get index of free fields which the AI can use for it's move
     gameBoardModule.boardToArray().forEach((field, index) => {
       if (field === '') freeMove.push(index);
     });
 
-    console.log(freeMove);
-
-    console.log('freeMove.length', freeMove.length);
+    // select a random move
     let randomLegalMoveIndex = Math.floor(Math.random() * freeMove.length);
     let randomLegalMove = freeMove[randomLegalMoveIndex];
 
-    console.log('randomLegalMove:', randomLegalMove);
-
+    // row 1
     if (randomLegalMove >= 0 && randomLegalMove < 3)
       gameBoardModule.board.row1[randomLegalMove] = 'O';
 
+    // row 2
     if (randomLegalMove >= 3 && randomLegalMove < 6)
       gameBoardModule.board.row2[randomLegalMove - 3] = 'O';
 
+    // row 3
     if (randomLegalMove >= 6 && randomLegalMove < 9)
       gameBoardModule.board.row3[randomLegalMove - 6] = 'O';
 
     displayControllerModule.draw();
-    console.log(gameBoardModule.board);
+
+    // check if draw
+    if (freeMove.length === 0) {
+      const winDisplay = document.querySelector('h2');
+
+      winDisplay.textContent = 'Draw 🤔';
+      winDisplay.style.color = 'orange';
+
+      winDisplay.style.display = 'block';
+    }
   };
 
   return {
@@ -183,4 +192,3 @@ const displayControllerModule = (() => {
 
 // known issues:
 // - AI can set a last move after the player, basically stealing the players win
-// - player can move after AI won (can also steal win)
