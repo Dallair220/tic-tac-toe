@@ -39,7 +39,7 @@ h2 {
 }
 
 .restart {
-  display: block;
+  display: none;
   margin: 30px auto;
   border-radius: 5px;
   padding: 10px 30px;

@@ -62,10 +62,19 @@ const gameBoardModule = (() => {
     return over;
   };
 
+  const restart = () => {
+    board.row1 = ['', '', ''];
+    board.row2 = ['', '', ''];
+    board.row3 = ['', '', ''];
+
+    over = false;
+  };
+
   return {
     boardToArray,
     board,
     isOver,
+    restart,
   };
 })();
 
@@ -145,6 +154,7 @@ const displayControllerModule = (() => {
     }
 
     winDisplay.style.display = 'block';
+    document.querySelector('.restart').style.display = 'block';
   };
 
   const aiMove = () => {
@@ -180,8 +190,17 @@ const displayControllerModule = (() => {
       winDisplay.style.color = 'orange';
 
       winDisplay.style.display = 'block';
+
+      document.querySelector('.restart').style.display = 'block';
     }
   };
+
+  document.querySelector('.restart').addEventListener('click', () => {
+    gameBoardModule.restart();
+    draw();
+    document.querySelector('h2').style.display = 'none';
+    document.querySelector('.restart').style.display = 'none';
+  });
 
   return {
     draw,
