@@ -136,7 +136,7 @@ const displayControllerModule = (() => {
     const winDisplay = document.querySelector('h2');
 
     if (marker === 'X') {
-      winDisplay.textContent = 'P1 won 🎉';
+      winDisplay.textContent = 'Player won 🎉';
       winDisplay.style.color = 'green';
     }
     if (marker === 'O') {
