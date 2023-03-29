@@ -11,20 +11,6 @@ const gameBoardModule = (() => {
   };
   const boardToArray = () => board.row1.concat(board.row2).concat(board.row3);
 
-  let isPlayerOneNext = true;
-
-  // not working properly.
-  const restart = () => {
-    board = {
-      row1: ['', '', ''],
-      row2: ['', '', ''],
-      row3: ['', '', ''],
-    };
-
-    //isPlayerOneNext = true;
-    gameBoardModule.over = false;
-  };
-
   let over = false;
   const isOver = () => {
     let winMarker = '';
@@ -79,9 +65,7 @@ const gameBoardModule = (() => {
   return {
     boardToArray,
     board,
-    isPlayerOneNext,
     isOver,
-    restart,
   };
 })();
 
@@ -90,20 +74,14 @@ const playerFF = (name, isPlayerOne) => {
 
   const addMarker = (item) => {
     item.addEventListener('click', () => {
-      if (gameBoardModule.isOver()) return;
       // check which players turn it is
       // drop out of event if it's wrong turn, let other overwrite
-      if (!gameBoardModule.isPlayerOneNext && isPlayerOne) {
-        return;
-      }
 
       // row 1
       if (item.className > 0 && item.className <= 3) {
         if (!gameBoardModule.board.row1[item.className - 1]) {
           // set marker if no marker set yet
           gameBoardModule.board.row1[item.className - 1] = marker;
-          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
-          displayControllerModule.aiMove();
         }
       }
 
@@ -112,8 +90,6 @@ const playerFF = (name, isPlayerOne) => {
         if (!gameBoardModule.board.row2[item.className - 4]) {
           // set marker if no marker set yet
           gameBoardModule.board.row2[item.className - 4] = marker;
-          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
-          displayControllerModule.aiMove();
         }
       }
 
@@ -122,12 +98,12 @@ const playerFF = (name, isPlayerOne) => {
         if (!gameBoardModule.board.row3[item.className - 7]) {
           // set marker if no marker set yet
           gameBoardModule.board.row3[item.className - 7] = marker;
-          gameBoardModule.isPlayerOneNext = !gameBoardModule.isPlayerOneNext;
-          displayControllerModule.aiMove();
         }
       }
       // eslint-disable-next-line no-use-before-define
       displayControllerModule.draw();
+      displayControllerModule.aiMove();
+      gameBoardModule.isOver();
     });
   };
 
@@ -140,16 +116,12 @@ const playerFF = (name, isPlayerOne) => {
 };
 
 const displayControllerModule = (() => {
-  // const p1Name = prompt('Player 1 name: ');
-  // const p2Name = prompt('Player 2 name: ');
   const p1 = playerFF('Player 1', true);
-  const p2 = playerFF('Player 2', false);
   const fields = document.querySelectorAll('.container > div');
 
-  // Add eventListenerMarker for each player
+  // Add eventListenerMarker for player
   fields.forEach((item) => {
     p1.addMarker(item);
-    p2.addMarker(item);
   });
 
   const draw = () => {
@@ -159,33 +131,39 @@ const displayControllerModule = (() => {
     });
   };
 
-  document.querySelector('.restart').addEventListener('click', () => {
-    gameBoardModule.restart();
-    draw();
-  });
-
   const congratulateWinner = (marker) => {
-    const winner = marker === 'X' ? p1 : p2;
-    alert(`${winner.name} did win!`);
+    let winner = marker === 'X' ? p1 : 'AI';
+
+    if (marker === 'X') alert(`${p1.name} won!`);
+    if (marker === 'O') alert('AI won!');
   };
 
   const aiMove = () => {
+    console.log(gameBoardModule.board);
+
     let freeMove = [];
     gameBoardModule.boardToArray().forEach((field, index) => {
       if (field === '') freeMove.push(index);
     });
 
-    let randomLegalMove = Math.floor(Math.random() * (freeMove.length + 1));
+    console.log(freeMove);
 
-    if (randomLegalMove > 0 && randomLegalMove <= 3)
+    console.log('freeMove.length', freeMove.length);
+    let randomLegalMoveIndex = Math.floor(Math.random() * freeMove.length);
+    let randomLegalMove = freeMove[randomLegalMoveIndex];
+
+    console.log('randomLegalMove:', randomLegalMove);
+
+    if (randomLegalMove >= 0 && randomLegalMove < 3)
       gameBoardModule.board.row1[randomLegalMove] = 'O';
 
-    if (randomLegalMove > 3 && randomLegalMove <= 6)
+    if (randomLegalMove >= 3 && randomLegalMove < 6)
       gameBoardModule.board.row2[randomLegalMove - 3] = 'O';
 
-    if (randomLegalMove > 6 && randomLegalMove <= 9)
+    if (randomLegalMove >= 6 && randomLegalMove < 9)
       gameBoardModule.board.row3[randomLegalMove - 6] = 'O';
 
+    displayControllerModule.draw();
     console.log(gameBoardModule.board);
   };
 
@@ -195,9 +173,3 @@ const displayControllerModule = (() => {
     aiMove,
   };
 })();
-
-// TODO:
-// 1. fix restart button
-// 2. add UI for winner
-
-// test

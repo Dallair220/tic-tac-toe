@@ -28,11 +28,3 @@ h1 {
   font-size: 100px;
   font-weight: bold;
 }
-
-.restart {
-  display: block;
-  margin: 30px auto;
-  border-radius: 5px;
-  padding: 10px 30px;
-  font-size: 20px;
-}
